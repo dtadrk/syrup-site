@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gomme Syrup Calculator — The Syrup Lab</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo">I like cocktails</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="gomme.html" class="active">Gomme Syrup</a>
+      <a href="brix.html">Brix</a>
+    </nav>
+  </header>
+
+  <main class="calc-page">
+
+    <div class="calc-header">
+      <div class="calc-tag">Calculator</div>
+      <h1>Gomme Syrup</h1>
+      <p class="calc-desc">
+        Gomme syrup (also <em>gum syrup</em>) is a rich simple syrup emulsified with gum arabic,
+        giving cocktails a velvety mouthfeel and better texture. It's a staple of classic
+        bartending — used in Old Fashioneds, Whiskey Sours, and daiquiris by those who know.
+      </p>
+    </div>
+
+    <div class="calc-layout">
+
+      <!-- CALCULATOR PANEL -->
+      <section class="calc-panel">
+        <h2>Batch Calculator</h2>
+
+        <div class="field-group">
+          <label for="batch-unit">Unit system</label>
+          <div class="toggle-row">
+            <button class="toggle-btn active" id="btn-ml" onclick="setUnit('ml')">ml / g</button>
+            <button class="toggle-btn" id="btn-oz" onclick="setUnit('oz')">fl oz / oz</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="batch-size">Target batch size</label>
+          <div class="input-row">
+            <input type="number" id="batch-size" value="500" min="1" oninput="calculate()" />
+            <span class="input-unit" id="unit-label-volume">ml</span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="sugar-ratio">Sugar ratio</label>
+          <div class="toggle-row">
+            <button class="toggle-btn active" id="btn-2-1" onclick="setRatio('2:1')">2:1 (rich)</button>
+            <button class="toggle-btn" id="btn-1-1" onclick="setRatio('1:1')">1:1 (standard)</button>
+          </div>
+          <small class="field-hint">2:1 is the traditional gomme ratio — sweeter, more viscous.</small>
+        </div>
+
+        <div class="field-group">
+          <label for="gum-pct">Gum arabic <span class="label-sub">% of sugar weight</span></label>
+          <div class="input-row">
+            <input type="range" id="gum-range" min="1" max="15" value="5" oninput="syncGumInput(this.value); calculate()" />
+            <input type="number" id="gum-pct" value="5" min="1" max="15" step="0.5" oninput="syncGumRange(this.value); calculate()" />
+            <span class="input-unit">%</span>
+          </div>
+          <small class="field-hint">Traditional: ~5%. Silkier mouthfeel: 8–12%.</small>
+        </div>
+
+        <div class="results-box">
+          <h3>Ingredients</h3>
+          <div class="results-grid">
+            <div class="result-item">
+              <span class="result-label">Water</span>
+              <span class="result-value" id="res-water">—</span>
+              <span class="result-unit" id="unit-water">ml</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">White sugar</span>
+              <span class="result-value" id="res-sugar">—</span>
+              <span class="result-unit" id="unit-sugar">g</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Gum arabic</span>
+              <span class="result-value" id="res-gum">—</span>
+              <span class="result-unit" id="unit-gum">g</span>
+            </div>
+            <div class="result-item result-item--total">
+              <span class="result-label">Est. yield</span>
+              <span class="result-value" id="res-yield">—</span>
+              <span class="result-unit" id="unit-yield">ml</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RECIPE NOTES PANEL -->
+      <section class="notes-panel">
+        <h2>Method</h2>
+        <ol class="method-steps">
+          <li>
+            <span class="step-num">01</span>
+            <div>
+              <strong>Dissolve gum arabic in cold water.</strong>
+              Combine the gum arabic powder with a small amount of cold water and let it hydrate for
+              at least 30 minutes (or overnight). It will look clumpy at first — that's normal.
+              Do not heat at this stage.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">02</span>
+            <div>
+              <strong>Make the sugar syrup.</strong>
+              Combine the remaining water and all the sugar in a saucepan. Heat gently over medium-low heat,
+              stirring until fully dissolved. Do not boil. Remove from heat once clear.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">03</span>
+            <div>
+              <strong>Combine & emulsify.</strong>
+              Allow the sugar syrup to cool slightly, then slowly add the hydrated gum arabic mixture
+              while stirring constantly. The gum will incorporate smoothly.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">04</span>
+            <div>
+              <strong>Strain & bottle.</strong>
+              Pass the finished syrup through a fine mesh strainer or cheesecloth to remove any
+              undissolved particles. Bottle in a sterilised glass container.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">05</span>
+            <div>
+              <strong>Storage.</strong>
+              Refrigerate. Lasts 3–4 weeks. The high sugar content acts as a preservative, but
+              gum arabic can ferment over time. Add 1 tsp vodka per 250 ml to extend shelf life.
+            </div>
+          </li>
+        </ol>
+
+        <div class="tips-box">
+          <h3>Notes</h3>
+          <ul>
+            <li>Use food-grade gum arabic (acacia gum) — available from homebrew or baking suppliers.</li>
+            <li>The syrup should be glossy and slightly thicker than simple syrup when cooled.</li>
+            <li>If the syrup turns cloudy or stringy, the gum didn't fully hydrate — strain again.</li>
+            <li>Works beautifully in Old Fashioneds, Whiskey Sours, and classic Daiquiris.</li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    <span>I like cocktails — no tracking, no ads, just ratios.</span>
+  </footer>
+
+  <script>
+    let unit = 'ml';
+    let ratio = '2:1';
+
+    function setUnit(u) {
+      unit = u;
+      document.getElementById('btn-ml').classList.toggle('active', u === 'ml');
+      document.getElementById('btn-oz').classList.toggle('active', u === 'oz');
+      const vLabel = u === 'ml' ? 'ml' : 'fl oz';
+      const wLabel = u === 'ml' ? 'g' : 'oz';
+      document.getElementById('unit-label-volume').textContent = vLabel;
+      ['unit-water', 'unit-yield'].forEach(id => document.getElementById(id).textContent = vLabel);
+      ['unit-sugar', 'unit-gum'].forEach(id => document.getElementById(id).textContent = wLabel);
+      calculate();
+    }
+
+    function setRatio(r) {
+      ratio = r;
+      document.getElementById('btn-2-1').classList.toggle('active', r === '2:1');
+      document.getElementById('btn-1-1').classList.toggle('active', r === '1:1');
+      calculate();
+    }
+
+    function syncGumInput(v) { document.getElementById('gum-pct').value = v; }
+    function syncGumRange(v) { document.getElementById('gum-range').value = v; }
+
+    function calculate() {
+      const batchInput = parseFloat(document.getElementById('batch-size').value) || 0;
+      const gumPct = parseFloat(document.getElementById('gum-pct').value) / 100 || 0.05;
+
+      // Convert batch to ml for internal maths
+      let batchMl = unit === 'oz' ? batchInput * 29.5735 : batchInput;
+
+      // Sugar:water ratio (by weight; water density ~1 g/ml)
+      // 2:1 means 2 parts sugar : 1 part water (by weight)
+      // For a given total volume target we solve approximately:
+      //   water_ml + sugar_g ≈ batch_ml (sugar volume ~0.6 ml/g after dissolving)
+      // Simpler approach used in practice: treat batch as total water volume to scale from
+      // and note the ratio as sugar weight per unit water weight.
+
+      let sugarRatioNum = ratio === '2:1' ? 2 : 1; // sugar grams per gram water
+
+      // Solve: water_g + sugar_g * 0.6 = batch_ml  (approx dissolved volume)
+      // sugar_g = sugarRatioNum * water_g
+      // water_g + sugarRatioNum * water_g * 0.6 = batch_ml
+      // water_g * (1 + 0.6 * sugarRatioNum) = batch_ml
+      const waterG = batchMl / (1 + 0.6 * sugarRatioNum);
+      const sugarG = sugarRatioNum * waterG;
+      const gumG = sugarG * gumPct;
+      // Estimated yield: water + dissolved sugar volume
+      const yieldMl = waterG + sugarG * 0.6;
+
+      function fmt(val, isWeight) {
+        if (unit === 'oz') {
+          // volume stays fl oz, weight to oz
+          const converted = isWeight ? val / 28.3495 : val / 29.5735;
+          return converted.toFixed(1);
+        }
+        return isWeight ? val.toFixed(1) : val.toFixed(0);
+      }
+
+      document.getElementById('res-water').textContent = fmt(waterG, false);
+      document.getElementById('res-sugar').textContent = fmt(sugarG, true);
+      document.getElementById('res-gum').textContent = fmt(gumG, true);
+      document.getElementById('res-yield').textContent = fmt(yieldMl, false);
+    }
+
+    // Initial calculation
+    calculate();
+  </script>
+
+</body>
+</html>

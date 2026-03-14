@@ -1,0 +1,608 @@
+/* =====================================================
+   THE SYRUP LAB — Dark bar aesthetic
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap');
+
+/* ---- Variables ---- */
+:root {
+  --bg:         #0e0c0a;
+  --bg-card:    #161310;
+  --bg-panel:   #1a1613;
+  --bg-input:   #1f1b17;
+  --border:     #2e2820;
+  --border-lit: #4a3d2e;
+  --amber:      #c8832a;
+  --amber-dim:  #8a5a1e;
+  --amber-glow: rgba(200, 131, 42, 0.12);
+  --gold:       #d4a843;
+  --text:       #e8dfd0;
+  --text-dim:   #a89880;
+  --text-muted: #4a4035;
+  --radius:     4px;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-mono:  'DM Mono', 'Courier New', monospace;
+}
+
+/* ---- Reset ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-weight: 300;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* subtle grain overlay */
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(200,131,42,0.07) 0%, transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ---- Header ---- */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: rgba(14,12,10,0.92);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+}
+
+.logo {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);
+  text-decoration: none;
+}
+
+nav {
+  display: flex;
+  gap: 2rem;
+}
+
+nav a {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+nav a:hover { color: var(--text); }
+nav a.active { color: var(--amber); }
+
+/* ---- Footer ---- */
+footer {
+  margin-top: auto;
+  padding: 1.5rem 2.5rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+/* ============================================
+   LANDING PAGE
+   ============================================ */
+.landing {
+  flex: 1;
+  padding: 0 2.5rem 4rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Hero */
+.hero {
+  padding: 7rem 0 5rem;
+  max-width: 680px;
+}
+
+.hero-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 1.5rem;
+}
+
+.hero h1 {
+  font-size: clamp(2.8rem, 5vw, 4.5rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--amber);
+  font-weight: 300;
+}
+
+.hero-sub {
+  font-size: 1.15rem;
+  color: var(--text-dim);
+  font-weight: 300;
+  margin-bottom: 0;
+  line-height: 1.85;
+  max-width: 480px;
+}
+
+.cta-btn {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber);
+  border: 1px solid var(--amber-dim);
+  padding: 0.8rem 1.8rem;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.cta-btn:hover {
+  background: var(--amber-glow);
+  border-color: var(--amber);
+}
+
+.hero h1,
+.calc-header h1,
+.card h2 {
+  font-family: var(--font-serif);
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.card {
+  background: var(--bg-card);
+  padding: 2rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  gap: 1.25rem;
+  transition: background 0.2s;
+}
+
+.card:hover:not(.card--soon) {
+  background: var(--bg-panel);
+}
+
+.card--soon {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.card-icon {
+  font-size: 1.5rem;
+  color: var(--amber-dim);
+  flex-shrink: 0;
+  line-height: 1;
+  padding-top: 0.15rem;
+}
+
+.card h2 {
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.card p {
+  font-size: 1rem;
+  color: var(--text-dim);
+  line-height: 1.75;
+  margin-bottom: 1rem;
+}
+
+.card-link {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.card-link--muted { color: var(--text-muted); }
+
+/* ============================================
+   CALCULATOR PAGE
+   ============================================ */
+.calc-page {
+  flex: 1;
+  padding: 0 2.5rem 4rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.calc-header {
+  padding: 4rem 0 3rem;
+  max-width: 640px;
+}
+
+.calc-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 1rem;
+}
+
+.calc-header h1 {
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  font-weight: 300;
+  color: var(--text);
+  margin-bottom: 1rem;
+  line-height: 1.1;
+}
+
+.calc-desc {
+  font-size: 1.08rem;
+  color: var(--text-dim);
+  line-height: 1.85;
+  max-width: 580px;
+}
+
+.calc-desc em { color: var(--amber); font-style: italic; }
+
+/* Layout */
+.calc-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.calc-panel,
+.notes-panel {
+  background: var(--bg-card);
+  padding: 2.5rem;
+}
+
+.calc-panel h2,
+.notes-panel h2 {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Fields */
+.field-group {
+  margin-bottom: 1.75rem;
+}
+
+label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.6rem;
+}
+
+.label-sub {
+  font-weight: 300;
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.field-hint {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 0.45rem;
+  line-height: 1.5;
+}
+
+/* Toggle buttons */
+.toggle-row {
+  display: flex;
+  gap: 0;
+}
+
+.toggle-btn {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  background: var(--bg-input);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex: 1;
+}
+
+.toggle-btn + .toggle-btn { border-left: none; }
+
+.toggle-btn.active {
+  background: var(--amber-glow);
+  color: var(--amber);
+  border-color: var(--amber-dim);
+}
+
+.toggle-btn:hover:not(.active) { background: var(--bg-panel); color: var(--text); }
+
+/* Number input row */
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+input[type="number"] {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  padding: 0.55rem 0.75rem;
+  width: 100%;
+  outline: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  transition: border-color 0.2s;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+input[type="number"]:focus { border-color: var(--amber-dim); }
+
+.input-unit {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-left: none;
+  padding: 0.55rem 0.7rem;
+  white-space: nowrap;
+}
+
+/* Range slider */
+input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2px;
+  background: var(--border-lit);
+  outline: none;
+  margin-right: 0.75rem;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--amber);
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--amber);
+  border: none;
+  cursor: pointer;
+}
+
+.input-row input[type="number"]:last-of-type {
+  width: 70px;
+  flex-shrink: 0;
+}
+
+/* Results box */
+.results-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.results-box h3 {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.results-grid {
+  display: grid;
+  gap: 0;
+}
+
+.result-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.result-item:last-child { border-bottom: none; }
+
+.result-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  flex: 1;
+}
+
+.result-value {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--text);
+  font-family: var(--font-serif);
+  letter-spacing: -0.01em;
+  min-width: 60px;
+  text-align: right;
+}
+
+.result-unit {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  min-width: 28px;
+}
+
+.result-item--total .result-value { color: var(--amber); }
+.result-item--total .result-label { color: var(--text); }
+
+/* ---- Notes / method panel ---- */
+.method-steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.method-steps li {
+  display: flex;
+  gap: 1rem;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text-dim);
+}
+
+.step-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--amber-dim);
+  letter-spacing: 0.1em;
+  padding-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+.method-steps strong {
+  display: block;
+  color: var(--text);
+  font-weight: 400;
+  margin-bottom: 0.2rem;
+}
+
+.tips-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 1.25rem 1.5rem;
+}
+
+.tips-box h3 {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.tips-box ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.tips-box li {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  padding-left: 1rem;
+  position: relative;
+  line-height: 1.75;
+}
+
+.tips-box li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--amber-dim);
+}
+
+/* Formula display */
+.formula {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--amber);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 0.6rem 1rem;
+  margin-top: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+/* Error state */
+.results-box--error {
+  border-color: #6b2a2a;
+}
+
+.error-msg {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #c06060;
+  margin-top: 0.75rem;
+  min-height: 1rem;
+  letter-spacing: 0.04em;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 800px) {
+  header { padding: 1rem 1.25rem; }
+  nav { gap: 1.25rem; }
+  .landing, .calc-page { padding: 0 1.25rem 3rem; }
+  .hero { padding: 4rem 0 3rem; }
+  .calc-layout { grid-template-columns: 1fr; }
+  footer { padding: 1.25rem; }
+}
+
+@media (max-width: 500px) {
+  .logo { font-size: 0.95rem; }
+  nav a { font-size: 0.68rem; }
+  .hero h1 { font-size: 2.2rem; }
+}
