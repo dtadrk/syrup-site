@@ -1,3 +1,0 @@
-# Cloudflare Pages — _redirects
-# Redirect bare domain to index (usually handled automatically, but explicit is fine)
-/  /index.html  200
