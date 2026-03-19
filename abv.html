@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ABV Calculator — I like cocktails</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .abv-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .abv-left {
+      background: var(--bg-card);
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .abv-right {
+      background: var(--bg-panel);
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .abv-left h2,
+    .abv-right h2 {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Ingredient rows */
+    .ingredient-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .ingredient-row {
+      display: grid;
+      grid-template-columns: 1fr 72px 72px 56px 32px;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .ingredient-header {
+      display: grid;
+      grid-template-columns: 1fr 72px 72px 56px 32px;
+      gap: 0.4rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .ingredient-header span {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .ingredient-row input[type="text"],
+    .ingredient-row input[type="number"] {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      padding: 0.45rem 0.6rem;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .ingredient-row input[type="number"]::-webkit-outer-spin-button,
+    .ingredient-row input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .ingredient-row input:focus { border-color: var(--amber-dim); }
+
+    .unit-select {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 0.45rem 0.3rem;
+      width: 100%;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      text-align: center;
+    }
+
+    .unit-select:focus { border-color: var(--amber-dim); }
+
+    .remove-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0.35rem 0;
+      width: 100%;
+      transition: color 0.15s, border-color 0.15s;
+      font-family: var(--font-mono);
+    }
+
+    .remove-btn:hover { color: #c06060; border-color: #6b2a2a; }
+
+    .add-btn {
+      align-self: flex-start;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .add-btn:hover { color: var(--amber); border-color: var(--amber-dim); }
+
+    /* Dilution section */
+    .dilution-section { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .dilution-row {
+      display: grid;
+      grid-template-columns: 1fr 72px 72px;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .dilution-row input[type="number"] {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      padding: 0.45rem 0.6rem;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .dilution-row input[type="number"]::-webkit-outer-spin-button,
+    .dilution-row input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .dilution-row input:focus { border-color: var(--amber-dim); }
+
+    /* Results */
+    .result-block {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .result-block h3 {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .abv-display {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .abv-number {
+      font-family: var(--font-serif);
+      font-size: 3.5rem;
+      font-weight: 300;
+      line-height: 1;
+      color: var(--amber);
+    }
+
+    .abv-number--secondary {
+      font-size: 3rem;
+      color: var(--text);
+    }
+
+    .abv-unit {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+    }
+
+    .abv-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    .breakdown-list {
+      display: flex;
+      flex-direction: column;
+      margin-top: 1.5rem;
+    }
+
+    .breakdown-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .breakdown-row:last-child { border-bottom: none; }
+
+    .breakdown-name { flex: 1; font-size: 0.82rem; color: var(--text-dim); }
+
+    .breakdown-vol {
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--text);
+      min-width: 52px;
+      text-align: right;
+    }
+
+    .breakdown-unit { font-size: 0.68rem; color: var(--text-muted); min-width: 24px; }
+
+    .breakdown-abv {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      min-width: 52px;
+      text-align: right;
+    }
+
+    .empty-state {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      text-align: center;
+      padding: 3rem 1rem;
+      border: 1px dashed var(--border);
+    }
+
+    .divider { height: 1px; background: var(--border); margin: 1rem 0; }
+
+    @media (max-width: 900px) {
+      .abv-layout { grid-template-columns: 1fr; }
+      .ingredient-row { grid-template-columns: 1fr 60px 64px 52px 28px; gap: 0.25rem; }
+      .dilution-row { grid-template-columns: 1fr 60px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo">I like cocktails</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="gomme.html">Gomme Syrup</a>
+      <a href="brix.html">Brix</a>
+      <a href="batch.html">Batch</a>
+      <a href="abv.html" class="active">ABV</a>
+    </nav>
+  </header>
+
+  <main class="calc-page">
+
+    <div class="calc-header">
+      <div class="calc-tag">Calculator</div>
+      <h1>ABV</h1>
+      <p class="calc-desc">
+        Enter each ingredient with its volume and ABV to calculate the
+        <em>pre-dilution ABV</em> of a cocktail. Then optionally add a dilution
+        step — ice melt, water, or any 0% addition — to estimate the
+        <em>final ABV</em> in the glass.
+      </p>
+    </div>
+
+    <div class="abv-layout">
+
+      <!-- LEFT: inputs -->
+      <div class="abv-left">
+
+        <div>
+          <h2>Ingredients</h2>
+          <div class="ingredient-header">
+            <span>Ingredient</span>
+            <span>Volume</span>
+            <span>Unit</span>
+            <span>ABV %</span>
+            <span></span>
+          </div>
+          <div class="ingredient-list" id="ingredient-list"></div>
+          <button class="add-btn" onclick="addIngredient()" style="margin-top:0.75rem">+ Add ingredient</button>
+        </div>
+
+        <div class="dilution-section">
+          <h2>Dilution (optional)</h2>
+          <small class="field-hint" style="margin-top:-1rem">
+            Percentage of the total ingredient volume added as water / ice melt.
+            Typical values: shaken ≈ 20–25% · stirred ≈ 10–15%.
+          </small>
+          <div class="dilution-row" style="margin-top:0.5rem">
+            <input type="number" id="dilution-pct" placeholder="0" min="0" max="200" step="any" oninput="calculate()" />
+            <span class="input-unit" style="border:1px solid var(--border); background:var(--bg-input); padding:0.45rem 0.6rem; font-size:0.78rem; color:var(--text-muted)">%</span>
+            <span style="font-size:0.72rem; color:var(--text-muted); letter-spacing:0.06em; padding-left:0.5rem">of total volume</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: results -->
+      <div class="abv-right" id="results-panel">
+        <div class="empty-state">Add ingredients on the left<br/>to see the ABV here.</div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <span>I like cocktails — no tracking, no ads, just ratios.</span>
+  </footer>
+
+  <script>
+    const UNITS = ['ml', 'cl', 'oz', 'dash', 'tsp', 'tbsp'];
+    const TO_ML = { ml: 1, cl: 10, oz: 29.5735, dash: 0.9, tsp: 4.92892, tbsp: 14.7868 };
+
+    let ingredientCount = 0;
+
+    function addIngredient(name = '', volume = '', unit = 'ml', abv = '') {
+      ingredientCount++;
+      const id = ingredientCount;
+      const list = document.getElementById('ingredient-list');
+
+      const row = document.createElement('div');
+      row.className = 'ingredient-row';
+      row.dataset.id = id;
+
+      const unitOptions = UNITS.map(u =>
+        `<option value="${u}" ${u === unit ? 'selected' : ''}>${u}</option>`
+      ).join('');
+
+      row.innerHTML = `
+        <input type="text"   placeholder="e.g. Rum"  value="${name}"   oninput="calculate()" />
+        <input type="number" placeholder="0"          value="${volume}" min="0" step="any" oninput="calculate()" />
+        <select class="unit-select" onchange="calculate()">${unitOptions}</select>
+        <input type="number" placeholder="0 %"        value="${abv}"   min="0" max="100" step="any" oninput="calculate()" />
+        <button class="remove-btn" onclick="removeIngredient(${id})" title="Remove">×</button>
+      `;
+
+      list.appendChild(row);
+      if (!name) row.querySelector('input[type="text"]').focus();
+      calculate();
+    }
+
+    function removeIngredient(id) {
+      const row = document.querySelector(`.ingredient-row[data-id="${id}"]`);
+      if (row) { row.remove(); calculate(); }
+    }
+
+    function getIngredients() {
+      return [...document.querySelectorAll('.ingredient-row')].map(row => {
+        const inputs  = row.querySelectorAll('input');
+        const select  = row.querySelector('select');
+        return {
+          name:   inputs[0].value.trim(),
+          volume: parseFloat(inputs[1].value) || 0,
+          unit:   select.value,
+          abv:    parseFloat(inputs[2].value) || 0,
+        };
+      });
+    }
+
+    function calculate() {
+      const ingredients = getIngredients().filter(i => i.volume > 0);
+      const panel = document.getElementById('results-panel');
+
+      if (ingredients.length === 0) {
+        panel.innerHTML = '<div class="empty-state">Add ingredients on the left<br/>to see the ABV here.</div>';
+        return;
+      }
+
+      // Convert all volumes to ml
+      const items = ingredients.map(i => ({
+        ...i,
+        volMl: i.volume * (TO_ML[i.unit] || 1),
+      }));
+
+      const totalVolMl = items.reduce((s, i) => s + i.volMl, 0);
+      const totalAlcMl = items.reduce((s, i) => s + i.volMl * (i.abv / 100), 0);
+      const preDilABV  = totalVolMl > 0 ? (totalAlcMl / totalVolMl) * 100 : 0;
+
+      // Dilution as % of total ingredient volume
+      const dilutionPct = parseFloat(document.getElementById('dilution-pct').value) || 0;
+      const dilutionMl  = totalVolMl * (dilutionPct / 100);
+      const postVolMl   = totalVolMl + dilutionMl;
+      const postDilABV  = postVolMl > 0 ? (totalAlcMl / postVolMl) * 100 : 0;
+      const hasDilution = dilutionPct > 0;
+
+      // Build breakdown rows
+      let breakdownHTML = '';
+      items.forEach(i => {
+        const abvLabel = i.abv > 0 ? `${i.abv}%` : '0%';
+        breakdownHTML += `
+          <div class="breakdown-row">
+            <span class="breakdown-name">${i.name || '<em>unnamed</em>'}</span>
+            <span class="breakdown-vol">${formatNum(i.volume)}</span>
+            <span class="breakdown-unit">${i.unit}</span>
+            <span class="breakdown-abv">${abvLabel}</span>
+          </div>`;
+      });
+
+      if (hasDilution) {
+        breakdownHTML += `
+          <div class="breakdown-row">
+            <span class="breakdown-name" style="color:var(--text-muted)">Dilution (water)</span>
+            <span class="breakdown-vol">${formatNum(dilutionMl)}</span>
+            <span class="breakdown-unit">ml</span>
+            <span class="breakdown-abv" style="color:var(--text-muted)">0%</span>
+          </div>`;
+      }
+
+      panel.innerHTML = `
+        <h2>Result</h2>
+
+        <div class="result-block">
+          <h3>Pre-dilution ABV</h3>
+          <div class="abv-display">
+            <span class="abv-number">${preDilABV.toFixed(1)}</span>
+            <span class="abv-unit">% ABV</span>
+          </div>
+          <div class="abv-sub">${formatNum(totalVolMl)} ml total · ${formatNum(totalAlcMl)} ml pure alcohol</div>
+        </div>
+
+        ${hasDilution ? `
+        <div class="result-block">
+          <h3>Post-dilution ABV</h3>
+          <div class="abv-display">
+            <span class="abv-number abv-number--secondary">${postDilABV.toFixed(1)}</span>
+            <span class="abv-unit">% ABV</span>
+          </div>
+          <div class="abv-sub">${formatNum(postVolMl)} ml total · +${formatNum(dilutionMl)} ml water (${dilutionPct}%)</div>
+        </div>` : `
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:1rem; line-height:1.7">
+          Add a dilution amount on the left to estimate post-dilution ABV.
+        </div>`}
+
+        <div class="divider"></div>
+
+        <h2 style="margin-bottom:0.75rem">Breakdown</h2>
+        <div style="display:grid; grid-template-columns:1fr 52px 24px 52px; gap:0.4rem; margin-bottom:0.3rem; padding:0 0 0.25rem; border-bottom:1px solid var(--border)">
+          <span style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted)">Ingredient</span>
+          <span style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);text-align:right">Vol</span>
+          <span></span>
+          <span style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);text-align:right">ABV</span>
+        </div>
+        <div class="breakdown-list">${breakdownHTML}</div>
+      `;
+    }
+
+    function formatNum(n) {
+      if (n === 0) return '0';
+      if (n < 0.1)  return n.toFixed(3);
+      if (n < 10)   return n.toFixed(2);
+      if (n < 100)  return n.toFixed(1);
+      return n.toFixed(0);
+    }
+
+    // Start with a few blank rows
+    addIngredient('', '', 'ml', '');
+    addIngredient('', '', 'ml', '');
+    addIngredient('', '', 'ml', '');
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Batch Calculator — I like cocktails</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ---- Batch-page specific styles ---- */
+    .batch-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .batch-left {
+      background: var(--bg-card);
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .batch-right {
+      background: var(--bg-panel);
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Section headings inside panels */
+    .batch-left h2,
+    .batch-right h2 {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Ingredient rows */
+    .ingredient-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .ingredient-row {
+      display: grid;
+      grid-template-columns: 1fr 80px 72px 32px;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .ingredient-row input[type="text"],
+    .ingredient-row input[type="number"] {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      padding: 0.45rem 0.6rem;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .ingredient-row input[type="number"]::-webkit-outer-spin-button,
+    .ingredient-row input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .ingredient-row input:focus { border-color: var(--amber-dim); }
+
+    .unit-select {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 0.45rem 0.3rem;
+      width: 100%;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      text-align: center;
+    }
+
+    .unit-select:focus { border-color: var(--amber-dim); }
+
+    .remove-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0.35rem 0;
+      width: 100%;
+      transition: color 0.15s, border-color 0.15s;
+      font-family: var(--font-mono);
+    }
+
+    .remove-btn:hover { color: #c06060; border-color: #6b2a2a; }
+
+    /* Column headers */
+    .ingredient-header {
+      display: grid;
+      grid-template-columns: 1fr 80px 72px 32px;
+      gap: 0.4rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .ingredient-header span {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0 0.1rem;
+    }
+
+    /* Add ingredient button */
+    .add-btn {
+      align-self: flex-start;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .add-btn:hover { color: var(--amber); border-color: var(--amber-dim); }
+
+    /* Target section */
+    .target-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .target-row {
+      display: grid;
+      grid-template-columns: 1fr 100px;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    /* Results panel */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .results-header h2 {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .serving-count {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+    }
+
+    .results-ingredient-list {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .result-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .result-row:last-child { border-bottom: none; }
+
+    .result-name {
+      flex: 1;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    .result-amount {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      font-weight: 300;
+      color: var(--text);
+      min-width: 64px;
+      text-align: right;
+    }
+
+    .result-unit-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      min-width: 28px;
+    }
+
+    .result-row--total .result-name  { color: var(--text); }
+    .result-row--total .result-amount { color: var(--amber); }
+
+    .empty-state {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      text-align: center;
+      padding: 3rem 1rem;
+      border: 1px dashed var(--border);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0.5rem 0;
+    }
+
+    /* unit toggle in target */
+    .unit-toggle {
+      display: flex;
+    }
+
+    .unit-toggle .toggle-btn {
+      flex: 1;
+      font-size: 0.7rem;
+      padding: 0.45rem 0.5rem;
+    }
+
+    @media (max-width: 800px) {
+      .batch-layout { grid-template-columns: 1fr; }
+      .ingredient-row { grid-template-columns: 1fr 70px 64px 28px; }
+    }
+
+    @media (max-width: 500px) {
+      .ingredient-row { grid-template-columns: 1fr 60px 56px 26px; gap: 0.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="logo">I like cocktails</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="gomme.html">Gomme Syrup</a>
+      <a href="brix.html">Brix</a>
+      <a href="batch.html" class="active">Batch</a>
+    </nav>
+  </header>
+
+  <main class="calc-page">
+
+    <div class="calc-header">
+      <div class="calc-tag">Calculator</div>
+      <h1>Batch</h1>
+      <p class="calc-desc">
+        Enter your cocktail recipe — ingredient by ingredient — then set a target
+        batch volume. The calculator scales every ingredient proportionally and
+        shows the total yield.
+      </p>
+    </div>
+
+    <div class="batch-layout">
+
+      <!-- LEFT: inputs -->
+      <div class="batch-left">
+
+        <!-- Ingredients -->
+        <div>
+          <h2>Recipe — per single drink</h2>
+          <div class="ingredient-header">
+            <span>Ingredient</span>
+            <span>Amount</span>
+            <span>Unit</span>
+            <span></span>
+          </div>
+          <div class="ingredient-list" id="ingredient-list"></div>
+          <button class="add-btn" onclick="addIngredient()" style="margin-top:0.75rem">+ Add ingredient</button>
+        </div>
+
+        <!-- Target -->
+        <div class="target-section">
+          <h2>Target batch volume</h2>
+
+          <div class="field-group" style="margin-bottom:0">
+            <div class="unit-toggle toggle-row" style="margin-bottom:0.75rem">
+              <button class="toggle-btn active" id="btn-ml" onclick="setVolumeUnit('ml')">ml</button>
+              <button class="toggle-btn" id="btn-oz" onclick="setVolumeUnit('oz')">fl oz</button>
+            </div>
+            <div class="input-row">
+              <input type="number" id="target-volume" value="1000" min="1" oninput="calculate()" />
+              <span class="input-unit" id="target-unit-label">ml</span>
+            </div>
+            <small class="field-hint" id="serving-hint"></small>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: results -->
+      <div class="batch-right">
+        <div class="results-header">
+          <h2>Scaled batch</h2>
+          <span class="serving-count" id="serving-count"></span>
+        </div>
+        <div class="results-ingredient-list" id="results-list">
+          <div class="empty-state">Add ingredients on the left<br/>to see your batch here.</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <span>I like cocktails — no tracking, no ads, just ratios.</span>
+  </footer>
+
+  <script>
+    const UNITS = ['ml', 'cl', 'oz', 'dash', 'tsp', 'tbsp', 'drop', 'g'];
+
+    // Conversion to ml for summing total volume
+    const TO_ML = { ml: 1, cl: 10, oz: 29.5735, dash: 0.9, tsp: 4.92892, tbsp: 14.7868, drop: 0.05, g: 1 };
+
+    let volumeUnit = 'ml';
+    let ingredientCount = 0;
+
+    function setVolumeUnit(u) {
+      volumeUnit = u;
+      document.getElementById('btn-ml').classList.toggle('active', u === 'ml');
+      document.getElementById('btn-oz').classList.toggle('active', u === 'oz');
+      document.getElementById('target-unit-label').textContent = u;
+
+      // Convert current target value
+      const input = document.getElementById('target-volume');
+      const val = parseFloat(input.value) || 0;
+      if (u === 'oz' && volumeUnit === 'oz') {
+        // already switched, just update display
+      }
+      // Convert between ml and oz
+      if (u === 'oz') {
+        input.value = (val / 29.5735).toFixed(1);
+      } else {
+        input.value = (val * 29.5735).toFixed(0);
+      }
+      calculate();
+    }
+
+    function addIngredient(name = '', amount = '', unit = 'ml') {
+      ingredientCount++;
+      const id = ingredientCount;
+      const list = document.getElementById('ingredient-list');
+
+      const row = document.createElement('div');
+      row.className = 'ingredient-row';
+      row.dataset.id = id;
+
+      const unitOptions = UNITS.map(u =>
+        `<option value="${u}" ${u === unit ? 'selected' : ''}>${u}</option>`
+      ).join('');
+
+      row.innerHTML = `
+        <input type="text"   placeholder="e.g. Rum"  value="${name}"   oninput="calculate()" />
+        <input type="number" placeholder="0"          value="${amount}" min="0" step="any" oninput="calculate()" />
+        <select class="unit-select" onchange="calculate()">${unitOptions}</select>
+        <button class="remove-btn" onclick="removeIngredient(${id})" title="Remove">×</button>
+      `;
+
+      list.appendChild(row);
+      // focus the name field if it's a new blank row
+      if (!name) row.querySelector('input[type="text"]').focus();
+      calculate();
+    }
+
+    function removeIngredient(id) {
+      const row = document.querySelector(`.ingredient-row[data-id="${id}"]`);
+      if (row) { row.remove(); calculate(); }
+    }
+
+    function getIngredients() {
+      return [...document.querySelectorAll('.ingredient-row')].map(row => {
+        const inputs = row.querySelectorAll('input');
+        const select = row.querySelector('select');
+        return {
+          name:   inputs[0].value.trim(),
+          amount: parseFloat(inputs[1].value) || 0,
+          unit:   select.value,
+        };
+      }).filter(i => i.amount > 0);
+    }
+
+    function calculate() {
+      const ingredients = getIngredients();
+      const targetRaw   = parseFloat(document.getElementById('target-volume').value) || 0;
+      const targetMl    = volumeUnit === 'oz' ? targetRaw * 29.5735 : targetRaw;
+      const resultsList = document.getElementById('results-list');
+      const servingCount = document.getElementById('serving-count');
+      const servingHint  = document.getElementById('serving-hint');
+
+      if (ingredients.length === 0 || targetMl <= 0) {
+        resultsList.innerHTML = '<div class="empty-state">Add ingredients on the left<br/>to see your batch here.</div>';
+        servingCount.textContent = '';
+        servingHint.textContent  = '';
+        return;
+      }
+
+      // Total single-drink volume in ml
+      const singleMl = ingredients.reduce((sum, i) => sum + i.amount * (TO_ML[i.unit] || 1), 0);
+      const servings  = singleMl > 0 ? targetMl / singleMl : 0;
+      const factor    = singleMl > 0 ? targetMl / singleMl : 0;
+
+      servingCount.textContent = singleMl > 0
+        ? `≈ ${servings.toFixed(1)} servings`
+        : '';
+
+      servingHint.textContent = singleMl > 0
+        ? `Single drink: ${singleMl.toFixed(1)} ml`
+        : '';
+
+      // Build results
+      let html = '';
+      ingredients.forEach(i => {
+        const scaled = i.amount * factor;
+        const displayUnit = i.unit;
+        html += `
+          <div class="result-row">
+            <span class="result-name">${i.name || '<em>unnamed</em>'}</span>
+            <span class="result-amount">${formatNum(scaled)}</span>
+            <span class="result-unit-label">${displayUnit}</span>
+          </div>`;
+      });
+
+      // Total row in target unit
+      const totalDisplay = volumeUnit === 'oz'
+        ? `${formatNum(targetMl / 29.5735)} fl oz`
+        : `${formatNum(targetMl)} ml`;
+
+      html += `
+        <div class="divider"></div>
+        <div class="result-row result-row--total">
+          <span class="result-name">Total volume</span>
+          <span class="result-amount" style="font-size:1rem">${totalDisplay}</span>
+          <span class="result-unit-label"></span>
+        </div>`;
+
+      resultsList.innerHTML = html;
+    }
+
+    function formatNum(n) {
+      if (n === 0) return '0';
+      if (n < 0.1)  return n.toFixed(3);
+      if (n < 10)   return n.toFixed(2);
+      if (n < 100)  return n.toFixed(1);
+      return n.toFixed(0);
+    }
+
+    // Start with a few blank rows
+    addIngredient('', '', 'ml');
+    addIngredient('', '', 'ml');
+    addIngredient('', '', 'ml');
+  </script>
+
+</body>
+</html>

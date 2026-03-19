@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Brix Calculator — The Syrup Lab</title>
+  <title>Brix Calculator — I like cocktails</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -21,12 +21,11 @@
 
     <div class="calc-header">
       <div class="calc-tag">Calculator</div>
-      <h1>Brix Sugar Addition</h1>
+      <h1>Brix</h1>
       <p class="calc-desc">
         Brix (°Bx) measures the sugar content of a solution — one degree Brix equals
-        one gram of sucrose per 100 grams of solution. Use this calculator to find
-        exactly how much sugar to add to bring any liquid to a <em>target Brix level</em>,
-        whether you're dialling in a house syrup, a liqueur base, or a fruit cordial.
+        one gram of sucrose per 100 grams of solution. Calculate how much sugar to add
+        to raise Brix, or how much liquid to add to lower it.
       </p>
     </div>
 
@@ -34,7 +33,16 @@
 
       <!-- CALCULATOR PANEL -->
       <section class="calc-panel">
-        <h2>Calculator</h2>
+
+        <div class="field-group">
+          <label>Mode</label>
+          <div class="toggle-row">
+            <button class="toggle-btn active" id="btn-raise" onclick="setMode('raise')">Raise Brix — add sugar</button>
+            <button class="toggle-btn" id="btn-lower" onclick="setMode('lower')">Lower Brix — add liquid</button>
+          </div>
+        </div>
+
+        <h2 id="panel-title">Raise Brix</h2>
 
         <div class="field-group">
           <label for="solution-weight">Current solution weight</label>
@@ -48,39 +56,39 @@
         <div class="field-group">
           <label for="current-brix">Current Brix <span class="label-sub">°Bx</span></label>
           <div class="input-row">
-            <input type="range" id="current-brix-range" min="0" max="80" value="0" step="0.5"
+            <input type="range" id="current-brix-range" min="0" max="99" value="0" step="0.5"
               oninput="syncCurrentBrixInput(this.value); calculate()" />
-            <input type="number" id="current-brix" value="0" min="0" max="80" step="0.5"
+            <input type="number" id="current-brix" value="0" min="0" max="99" step="0.5"
               oninput="syncCurrentBrixRange(this.value); calculate()" />
             <span class="input-unit">°Bx</span>
           </div>
-          <small class="field-hint">0 °Bx for plain water. Measure with a refractometer for accuracy.</small>
+          <small class="field-hint">Measure with a refractometer for accuracy.</small>
         </div>
 
         <div class="field-group">
           <label for="target-brix">Target Brix <span class="label-sub">°Bx</span></label>
           <div class="input-row">
-            <input type="range" id="target-brix-range" min="1" max="100" value="65" step="0.5"
+            <input type="range" id="target-brix-range" min="0" max="99" value="65" step="0.5"
               oninput="syncTargetBrixInput(this.value); calculate()" />
-            <input type="number" id="target-brix" value="65" min="1" max="100" step="0.5"
+            <input type="number" id="target-brix" value="65" min="0" max="99" step="0.5"
               oninput="syncTargetBrixRange(this.value); calculate()" />
             <span class="input-unit">°Bx</span>
           </div>
-          <small class="field-hint">
+          <small class="field-hint" id="target-hint">
             Common targets: simple syrup 1:1 ≈ 50 °Bx · rich 2:1 ≈ 67 °Bx · grenadine ≈ 55–65 °Bx
           </small>
         </div>
 
         <div class="results-box" id="results-box">
-          <h3>Result</h3>
+          <h3 id="results-title">Result</h3>
           <div class="results-grid">
             <div class="result-item result-item--total">
-              <span class="result-label">Sugar to add</span>
-              <span class="result-value" id="res-sugar-add">—</span>
-              <span class="result-unit">g</span>
+              <span class="result-label" id="res-main-label">Sugar to add</span>
+              <span class="result-value" id="res-main">—</span>
+              <span class="result-unit" id="res-main-unit">g</span>
             </div>
             <div class="result-item">
-              <span class="result-label">Final solution weight</span>
+              <span class="result-label">Final weight</span>
               <span class="result-value" id="res-final-weight">—</span>
               <span class="result-unit">g</span>
             </div>
@@ -103,39 +111,37 @@
           <li>
             <span class="step-num">01</span>
             <div>
-              <strong>The formula.</strong>
-              Brix is defined as grams of sucrose per 100 g of solution. Given a solution of
-              known weight <em>W</em> at current Brix <em>B₀</em>, the sugar mass to add to
-              reach target Brix <em>B₁</em> is:
-              <div class="formula">
-                S = W × (B₁ − B₀) / (100 − B₁)
-              </div>
-              The final solution weighs <em>W + S</em> grams, and its Brix is exactly B₁.
+              <strong>Raising Brix — add sugar.</strong>
+              Given a solution of weight <em>W</em> at current Brix <em>B₀</em>, the sugar
+              needed to reach target <em>B₁</em> is:
+              <div class="formula">S = W × (B₁ − B₀) / (100 − B₁)</div>
             </div>
           </li>
           <li>
             <span class="step-num">02</span>
             <div>
-              <strong>Measure first.</strong>
-              If your liquid already contains sugar (juice, wine, liqueur), measure its
-              current Brix with a refractometer before entering it here. For plain water
-              or neutral spirits, use 0 °Bx.
+              <strong>Lowering Brix — add liquid.</strong>
+              To dilute a solution down to a target Brix, the liquid to add is:
+              <div class="formula">L = W × (B₀ − B₁) / B₁</div>
+              This assumes the diluent is pure water (0 °Bx). For diluting with another
+              liquid (e.g. juice), use its Brix as the current Brix of a separate calculation.
             </div>
           </li>
           <li>
             <span class="step-num">03</span>
             <div>
-              <strong>Add sugar gradually.</strong>
-              Add the calculated sugar to your liquid and stir or heat gently until fully
-              dissolved. Sucrose dissolves faster in warm liquid.
+              <strong>Measure first.</strong>
+              If your liquid already contains sugar — juice, wine, liqueur — measure its
+              Brix with a refractometer before entering it. For plain water or neutral
+              spirits, use 0 °Bx.
             </div>
           </li>
           <li>
             <span class="step-num">04</span>
             <div>
-              <strong>Verify.</strong>
-              Once cooled to room temperature, confirm with a refractometer. Temperature
-              affects readings — most refractometers assume 20 °C.
+              <strong>Verify after adjusting.</strong>
+              Once at room temperature, confirm with your refractometer.
+              Most refractometers assume 20 °C — temperature affects readings.
             </div>
           </li>
         </ol>
@@ -148,7 +154,7 @@
             <li>Grenadine (typical) — 55–65 °Bx</li>
             <li>Fresh orange juice — 10–13 °Bx</li>
             <li>Fresh lemon juice — 6–9 °Bx</li>
-            <li>Dry white wine — 0–2 °Bx (most alcohol fermented out)</li>
+            <li>Dry white wine — 0–2 °Bx</li>
             <li>Port / dessert wine — 6–12 °Bx</li>
             <li>Supersaturation limit (sucrose, 20 °C) — ~67 °Bx</li>
           </ul>
@@ -163,6 +169,43 @@
   </footer>
 
   <script>
+    let mode = 'raise';
+
+    function setMode(m) {
+      mode = m;
+      document.getElementById('btn-raise').classList.toggle('active', m === 'raise');
+      document.getElementById('btn-lower').classList.toggle('active', m === 'lower');
+
+      if (m === 'raise') {
+        document.getElementById('panel-title').textContent  = 'Raise Brix';
+        document.getElementById('res-main-label').textContent = 'Sugar to add';
+        document.getElementById('res-main-unit').textContent  = 'g';
+        document.getElementById('target-hint').textContent =
+          'Common targets: simple syrup 1:1 ≈ 50 °Bx · rich 2:1 ≈ 67 °Bx · grenadine ≈ 55–65 °Bx';
+        // restore raise-mode defaults if current > target
+        const b0 = parseFloat(document.getElementById('current-brix').value) || 0;
+        const b1 = parseFloat(document.getElementById('target-brix').value) || 0;
+        if (b1 <= b0) {
+          document.getElementById('target-brix').value = Math.min(b0 + 10, 99);
+          document.getElementById('target-brix-range').value = Math.min(b0 + 10, 99);
+        }
+      } else {
+        document.getElementById('panel-title').textContent  = 'Lower Brix';
+        document.getElementById('res-main-label').textContent = 'Water to add';
+        document.getElementById('res-main-unit').textContent  = 'g';
+        document.getElementById('target-hint').textContent =
+          'Target must be lower than current Brix. Assumes pure water (0 °Bx) as diluent.';
+        // restore lower-mode defaults if target >= current
+        const b0 = parseFloat(document.getElementById('current-brix').value) || 0;
+        const b1 = parseFloat(document.getElementById('target-brix').value) || 0;
+        if (b1 >= b0) {
+          document.getElementById('target-brix').value = Math.max(b0 - 10, 1);
+          document.getElementById('target-brix-range').value = Math.max(b0 - 10, 1);
+        }
+      }
+      calculate();
+    }
+
     function syncCurrentBrixInput(v) { document.getElementById('current-brix').value = v; }
     function syncCurrentBrixRange(v) { document.getElementById('current-brix-range').value = v; }
     function syncTargetBrixInput(v)  { document.getElementById('target-brix').value = v; }
@@ -174,43 +217,52 @@
       const B1 = parseFloat(document.getElementById('target-brix').value) || 0;
 
       const errorEl = document.getElementById('error-msg');
-      const box = document.getElementById('results-box');
+      const box     = document.getElementById('results-box');
 
-      // Validation
-      if (B1 >= 100) {
-        showError('Target Brix must be below 100 °Bx.');
-        return;
+      if (W <= 0) { showError('Solution weight must be greater than 0 g.'); return; }
+
+      if (mode === 'raise') {
+        if (B1 >= 100) { showError('Target Brix must be below 100 °Bx.'); return; }
+        if (B1 <= B0)  { showError('Target Brix must be higher than current Brix.'); return; }
+
+        // S = W * (B1 - B0) / (100 - B1)
+        const S = W * (B1 - B0) / (100 - B1);
+        const finalWeight = W + S;
+        const sugarAlready = W * B0 / 100;
+        const confirmedBrix = (sugarAlready + S) / finalWeight * 100;
+
+        clearError();
+        document.getElementById('res-main').textContent          = S.toFixed(1);
+        document.getElementById('res-final-weight').textContent  = finalWeight.toFixed(1);
+        document.getElementById('res-confirmed-brix').textContent = confirmedBrix.toFixed(2);
+
+      } else {
+        if (B0 <= 0)  { showError('Current Brix must be greater than 0 °Bx to dilute.'); return; }
+        if (B1 <= 0)  { showError('Target Brix must be greater than 0 °Bx.'); return; }
+        if (B1 >= B0) { showError('Target Brix must be lower than current Brix.'); return; }
+
+        // L = W * (B0 - B1) / B1
+        const L = W * (B0 - B1) / B1;
+        const finalWeight = W + L;
+        const sugarInSolution = W * B0 / 100;
+        const confirmedBrix = sugarInSolution / finalWeight * 100;
+
+        clearError();
+        document.getElementById('res-main').textContent          = L.toFixed(1);
+        document.getElementById('res-final-weight').textContent  = finalWeight.toFixed(1);
+        document.getElementById('res-confirmed-brix').textContent = confirmedBrix.toFixed(2);
       }
-      if (B1 <= B0) {
-        showError('Target Brix must be higher than current Brix.');
-        return;
-      }
-      if (W <= 0) {
-        showError('Solution weight must be greater than 0 g.');
-        return;
-      }
+    }
 
-      errorEl.textContent = '';
-      box.classList.remove('results-box--error');
-
-      // Core formula: S = W * (B1 - B0) / (100 - B1)
-      const S = W * (B1 - B0) / (100 - B1);
-      const finalWeight = W + S;
-      // Verify: (sugar already in solution + S) / finalWeight * 100
-      const sugarAlready = W * B0 / 100;
-      const confirmedBrix = (sugarAlready + S) / finalWeight * 100;
-
-      document.getElementById('res-sugar-add').textContent     = S.toFixed(1);
-      document.getElementById('res-final-weight').textContent  = finalWeight.toFixed(1);
-      document.getElementById('res-confirmed-brix').textContent = confirmedBrix.toFixed(2);
+    function clearError() {
+      document.getElementById('error-msg').textContent = '';
+      document.getElementById('results-box').classList.remove('results-box--error');
     }
 
     function showError(msg) {
-      const errorEl = document.getElementById('error-msg');
-      const box = document.getElementById('results-box');
-      errorEl.textContent = msg;
-      box.classList.add('results-box--error');
-      ['res-sugar-add','res-final-weight','res-confirmed-brix'].forEach(id => {
+      document.getElementById('error-msg').textContent = msg;
+      document.getElementById('results-box').classList.add('results-box--error');
+      ['res-main','res-final-weight','res-confirmed-brix'].forEach(id => {
         document.getElementById(id).textContent = '—';
       });
     }
