@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BSC Dienstag 12.05. — Schedule</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --orange: #F04E23;
+    --black: #111111;
+    --white: #F5F3EE;
+    --grey: #CDCBC6;
+    --light-grey: #E8E6E1;
+    --dark-grey: #2A2A2A;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    background: var(--white);
+    color: var(--black);
+    font-family: 'Barlow Condensed', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    background: var(--black);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    border-bottom: 3px solid var(--orange);
+  }
+
+  .site-logo {
+    color: var(--white);
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: -0.02em;
+    opacity: 0.7;
+  }
+
+  .site-logo:hover { opacity: 1; }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: var(--black);
+    padding: 3rem 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: 'DIENSTAG';
+    position: absolute;
+    right: -0.05em;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: clamp(5rem, 18vw, 14rem);
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(240,78,35,0.18);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .hero-date {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.8rem, 8vw, 6rem);
+    font-weight: 900;
+    color: var(--white);
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--orange);
+  }
+
+  .hero-meta {
+    margin-top: 1.25rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--grey);
+    letter-spacing: 0.05em;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── TOGGLE ─── */
+  .controls {
+    background: var(--black);
+    padding: 0 2rem 1.5rem;
+    display: flex;
+    gap: 0;
+  }
+
+  .toggle-group {
+    display: flex;
+    border: 2px solid var(--orange);
+  }
+
+  .toggle-btn {
+    background: transparent;
+    border: none;
+    color: var(--orange);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.55rem 1.4rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .toggle-btn + .toggle-btn {
+    border-left: 2px solid var(--orange);
+  }
+
+  .toggle-btn.active {
+    background: var(--orange);
+    color: var(--white);
+  }
+
+  .toggle-btn:hover:not(.active) {
+    background: rgba(240,78,35,0.12);
+  }
+
+  /* ─── MAIN CONTENT ─── */
+  main {
+    padding: 2rem;
+    max-width: 1200px;
+  }
+
+  /* ─── VIEW CONTAINERS ─── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ─── BY TIME VIEW ─── */
+  .time-block {
+    margin-bottom: 0;
+  }
+
+  .time-header {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem 0 0.75rem;
+    border-top: 3px solid var(--black);
+    position: sticky;
+    top: 0;
+    background: var(--white);
+    z-index: 10;
+  }
+
+  .time-label {
+    font-size: 2.4rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--orange);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .time-label-text {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--grey);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .time-events {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--light-grey);
+    margin-bottom: 0;
+    border: 1px solid var(--light-grey);
+  }
+
+  .event-card {
+    background: var(--white);
+    padding: 1.1rem 1.25rem;
+    transition: background 0.12s;
+  }
+
+  .event-card:hover { background: #EEECEA; }
+
+  .event-stage-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+    color: var(--white);
+    background: var(--black);
+    padding: 0.15rem 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .event-stage-tag.stage-business { background: var(--black); }
+  .event-stage-tag.stage-gastro   { background: #444; }
+  .event-stage-tag.stage-concept  { background: var(--orange); }
+  .event-stage-tag.stage-workshop { background: #666; }
+
+  .event-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.45rem;
+  }
+
+  .event-speakers {
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: #555;
+    line-height: 1.35;
+  }
+
+  .event-presenter {
+    font-size: 0.72rem;
+    font-family: 'DM Mono', monospace;
+    color: var(--orange);
+    margin-top: 0.35rem;
+    letter-spacing: 0.02em;
+  }
+
+  /* ─── BY STAGE VIEW ─── */
+  .stage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2px;
+    background: var(--light-grey);
+    border: 1px solid var(--light-grey);
+  }
+
+  .stage-column {
+    background: var(--white);
+  }
+
+  .stage-column-header {
+    padding: 1.25rem 1.25rem 1rem;
+    border-bottom: 3px solid var(--black);
+    position: sticky;
+    top: 0;
+    background: var(--white);
+    z-index: 10;
+  }
+
+  .stage-name {
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+
+  .stage-hosts {
+    font-size: 0.7rem;
+    font-family: 'DM Mono', monospace;
+    color: #888;
+    margin-top: 0.35rem;
+    letter-spacing: 0.02em;
+  }
+
+  .stage-event {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--light-grey);
+    transition: background 0.12s;
+  }
+
+  .stage-event:hover { background: #EEECEA; }
+  .stage-event:last-child { border-bottom: none; }
+
+  .stage-event-time {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--orange);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stage-event-title {
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin-bottom: 0.35rem;
+  }
+
+  .stage-event-speakers {
+    font-size: 0.82rem;
+    color: #555;
+    line-height: 1.35;
+  }
+
+  .stage-event-presenter {
+    font-size: 0.72rem;
+    font-family: 'DM Mono', monospace;
+    color: var(--orange);
+    margin-top: 0.3rem;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    margin-top: 4rem;
+    padding: 1.25rem 2rem;
+    border-top: 1px solid var(--light-grey);
+    font-size: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    color: var(--grey);
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .hero { padding: 2rem 1.25rem 2rem; }
+    main { padding: 1.25rem; }
+    .controls { padding: 0 1.25rem 1.25rem; }
+    header { padding: 0 1.25rem; }
+    .time-events { grid-template-columns: 1fr; }
+    .stage-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="site-logo">I like cocktails</a>
+</header>
+
+<div class="hero">
+  <div class="hero-date">12. Mai 2026</div>
+  <h1>Bar Symposium<br/><em>Cologne</em></h1>
+  <p class="hero-meta">4 stages · 16 sessions · Dienstag</p>
+</div>
+
+<div class="controls">
+  <div class="toggle-group">
+    <button class="toggle-btn active" onclick="setView('time')">By Time</button>
+    <button class="toggle-btn" onclick="setView('stage')">By Stage</button>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══════════════ BY TIME VIEW ══════════════ -->
+  <div class="view active" id="view-time">
+
+    <div class="time-block">
+      <div class="time-header">
+        <div>
+          <div class="time-label">13:00</div>
+        </div>
+        <div class="time-label-text">3 sessions</div>
+      </div>
+      <div class="time-events">
+        <div class="event-card">
+          <div class="event-stage-tag stage-business">Business Stage</div>
+          <div class="event-title">Für wen machen wir das eigentlich?</div>
+          <div class="event-speakers">Constanze Ley &amp; Florian Sonneborn</div>
+          <div class="event-presenter">presented by Bar Symposium Cologne</div>
+        </div>
+        <div class="event-card">
+          <div class="event-stage-tag stage-gastro">Gastro Stage</div>
+          <div class="event-title">Winzer Champagner &amp; Barkultur – A Perfect Match</div>
+          <div class="event-speakers">Elias Schlichting</div>
+        </div>
+        <div class="event-card">
+          <div class="event-stage-tag stage-concept">Concept / Club Cantina</div>
+          <div class="event-title">Tequila Exposed: How Bartenders Recognize Real Quality – and Choose Confidently</div>
+          <div class="event-speakers">Jürgen Deibel</div>
+          <div class="event-presenter">13:30 · Club Cantina</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="time-block">
+      <div class="time-header">
+        <div>
+          <div class="time-label">14:00</div>
+        </div>
+        <div class="time-label-text">3 sessions</div>
+      </div>
+      <div class="time-events">
+        <div class="event-card">
+          <div class="event-stage-tag stage-gastro">Gastro Stage</div>
+          <div class="event-title">Früher war mehr draussen. Wie sieht die Zukunft des Rausgehens aus?</div>
+          <div class="event-speakers">Tim Bentzin &amp; Alexander aka Finchi Schleeweiß</div>
+        </div>
+        <div class="event-card">
+          <div class="event-stage-tag stage-concept">Concept Stage</div>
+          <div class="event-title">Moloko+ Frankfurt am Main</div>
+          <div class="event-speakers">Julian Yücevardar</div>
+          <div class="event-presenter">14:30 · Concept</div>
+        </div>
+        <div class="event-card">
+          <div class="event-stage-tag stage-workshop">Workshop Stage</div>
+          <div class="event-title">Cocktail des Tages: Bier</div>
+          <div class="event-speakers">Massimo Wenk &amp; Steffen Laakmann</div>
+          <div class="event-presenter">presented by BRLO</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="time-block">
+      <div class="time-header">
+        <div>
+          <div class="time-label">14:15</div>
+        </div>
+        <div class="time-label-text">1 session</div>
+      </div>
+      <div class="time-events">
+        <div class="event-card">
+          <div class="event-stage-tag stage-business">Business Stage</div>
+          <div class="event-title">Kompetenz hat kein Geschlecht – aber einen Führungsstil</div>
+          <div class="event-speakers">Désirée Steinheuer, Janine Woltaire, Luise Volkert, Michi Stiehl</div>
+          <div class="event-presenter">presented by Lobenbergs</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="time-block">
+      <div class="time-header">
+        <div>
+          <div class="time-label">15:00</div>
+        </div>
+        <div class="time-label-text">3 sessions</div>
+      </div>
+      <div class="time-events">
+        <div class="event-card">
+          <div class="event-stage-tag stage-gastro">Gastro Stage</div>
+          <div class="event-title">Haltung als Betriebssystem: Der Hosting Tomorrow Guide of Conduct</div>
+          <div class="event-speakers">Susanne Baró Fernández</div>
+        </div>
+        <div class="event-card">
+          <div class="event-stage-tag stage-concept">Club Cantina</div>
+          <div class="event-title">From Ancient Roots to Global Glasses – The Creativity of Agave</div>
+          <div class="event-speakers">Alina Bazen, Sven Goller</div>
+          <div class="event-presenter">15:30 · Club Cantina</div>
+        </div>
+        <div class="event-card">
+          <div class="event-stage-tag stage-workshop">Workshop Stage</div>
+          <div class="event-title">Against the Grain: Port in Modern Mixology</div>
+          <div class="event-speakers">José Mendes</div>
+          <div class="event-presenter">presented by Cockburn's Port</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="time-block">
+      <div class="time-header">
+        <div>
+          <div class="time-label">15:30</div>
+        </div>
+        <div class="time-label-text">1 session</div>
+      </div>
+      <div class="time-events">
+        <div class="event-card">
+          <div class="event-stage-tag stage-business">Business Stage</div>
+          <div class="event-title">Vom Handwerk zur Instanz: Social Media als Asset</div>
+          <div class="event-speakers">Jelena Jozo &amp; Jaspar Wcislo</div>
+          <div class="event-presenter">presented by Lobenbergs</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="time-block">
+      <div class="time-header">
+        <div>
+          <div class="time-label">16:00</div>
+        </div>
+        <div class="time-label-text">1 session</div>
+      </div>
+      <div class="time-events">
+        <div class="event-card">
+          <div class="event-stage-tag stage-workshop">Workshop Stage</div>
+          <div class="event-title">Fermentation In-Depth: Eine Perspektive</div>
+          <div class="event-speakers">Felix Heyer</div>
+          <div class="event-presenter">presented by Bar Symposium Cologne</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="time-block">
+      <div class="time-header">
+        <div>
+          <div class="time-label">16:30</div>
+        </div>
+        <div class="time-label-text">2 sessions</div>
+      </div>
+      <div class="time-events">
+        <div class="event-card">
+          <div class="event-stage-tag stage-gastro">Gastro Stage</div>
+          <div class="event-title">Stay Curious. Stay Connected. – Brand Marketing &amp; Community Building im 25hours Universum</div>
+          <div class="event-speakers">Laura Crusi &amp; Neslisah Ellenbeck</div>
+        </div>
+        <div class="event-card">
+          <div class="event-stage-tag stage-concept">Concept Stage</div>
+          <div class="event-title">Inside Athens Bar Show</div>
+          <div class="event-speakers">Babis Kaidalidis</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="time-block">
+      <div class="time-header">
+        <div>
+          <div class="time-label">16:45</div>
+        </div>
+        <div class="time-label-text">1 session</div>
+      </div>
+      <div class="time-events">
+        <div class="event-card">
+          <div class="event-stage-tag stage-business">Business Stage</div>
+          <div class="event-title">BSC Stipendium 2026</div>
+          <div class="event-speakers">Sven Riebel, Felix Engels, Dominique Simon</div>
+          <div class="event-presenter">presented by Bar Symposium Cologne</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /view-time -->
+
+
+  <!-- ══════════════ BY STAGE VIEW ══════════════ -->
+  <div class="view" id="view-stage">
+    <div class="stage-grid">
+
+      <!-- BUSINESS STAGE -->
+      <div class="stage-column">
+        <div class="stage-column-header">
+          <div class="stage-name">Business<br/>Stage</div>
+          <div class="stage-hosts">Nawid Samawat &amp; Gabriel Daun</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">13:00</div>
+          <div class="stage-event-title">Für wen machen wir das eigentlich?</div>
+          <div class="stage-event-speakers">Constanze Ley &amp; Florian Sonneborn</div>
+          <div class="stage-event-presenter">presented by Bar Symposium Cologne</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">14:15</div>
+          <div class="stage-event-title">Kompetenz hat kein Geschlecht – aber einen Führungsstil</div>
+          <div class="stage-event-speakers">Désirée Steinheuer, Janine Woltaire, Luise Volkert, Michi Stiehl</div>
+          <div class="stage-event-presenter">presented by Lobenbergs</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">15:30</div>
+          <div class="stage-event-title">Vom Handwerk zur Instanz: Social Media als Asset</div>
+          <div class="stage-event-speakers">Jelena Jozo &amp; Jaspar Wcislo</div>
+          <div class="stage-event-presenter">presented by Lobenbergs</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">16:45</div>
+          <div class="stage-event-title">BSC Stipendium 2026</div>
+          <div class="stage-event-speakers">Sven Riebel, Felix Engels, Dominique Simon</div>
+          <div class="stage-event-presenter">presented by Bar Symposium Cologne</div>
+        </div>
+      </div>
+
+      <!-- GASTRO STAGE -->
+      <div class="stage-column">
+        <div class="stage-column-header">
+          <div class="stage-name">Gastro<br/>Stage</div>
+          <div class="stage-hosts">Anna Luhnau &amp; Michi Stiel</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">13:00</div>
+          <div class="stage-event-title">Winzer Champagner &amp; Barkultur – A Perfect Match</div>
+          <div class="stage-event-speakers">Elias Schlichting</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">14:00</div>
+          <div class="stage-event-title">Früher war mehr draussen. Wie sieht die Zukunft des Rausgehens aus?</div>
+          <div class="stage-event-speakers">Tim Bentzin &amp; Alexander aka Finchi Schleeweiß</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">15:00</div>
+          <div class="stage-event-title">Haltung als Betriebssystem: Der Hosting Tomorrow Guide of Conduct</div>
+          <div class="stage-event-speakers">Susanne Baró Fernández</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">16:30</div>
+          <div class="stage-event-title">Stay Curious. Stay Connected. – Brand Marketing &amp; Community Building im 25hours Universum</div>
+          <div class="stage-event-speakers">Laura Crusi &amp; Neslisah Ellenbeck</div>
+        </div>
+      </div>
+
+      <!-- CONCEPT STAGE & CLUB CANTINA -->
+      <div class="stage-column">
+        <div class="stage-column-header">
+          <div class="stage-name">Concept Stage &amp; Club Cantina</div>
+          <div class="stage-hosts">Betty Kupsa, Angelica Schwarzkopf &amp; Manuel Weißkopf</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">13:30</div>
+          <div class="stage-event-title">Tequila Exposed: How Bartenders Recognize Real Quality – and Choose Confidently</div>
+          <div class="stage-event-speakers">Jürgen Deibel</div>
+          <div class="stage-event-presenter">Club Cantina</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">14:30</div>
+          <div class="stage-event-title">Moloko+ Frankfurt am Main</div>
+          <div class="stage-event-speakers">Julian Yücevardar</div>
+          <div class="stage-event-presenter">Concept</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">15:30</div>
+          <div class="stage-event-title">From Ancient Roots to Global Glasses – The Creativity of Agave</div>
+          <div class="stage-event-speakers">Alina Bazen, Sven Goller</div>
+          <div class="stage-event-presenter">Club Cantina</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">16:30</div>
+          <div class="stage-event-title">Inside Athens Bar Show</div>
+          <div class="stage-event-speakers">Babis Kaidalidis</div>
+          <div class="stage-event-presenter">Concept</div>
+        </div>
+      </div>
+
+      <!-- WORKSHOP STAGE -->
+      <div class="stage-column">
+        <div class="stage-column-header">
+          <div class="stage-name">Workshop<br/>Stage</div>
+          <div class="stage-hosts">Fea Dunse &amp; Maximilian Koppermann</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">14:00</div>
+          <div class="stage-event-title">Cocktail des Tages: Bier</div>
+          <div class="stage-event-speakers">Massimo Wenk &amp; Steffen Laakmann</div>
+          <div class="stage-event-presenter">presented by BRLO</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">15:00</div>
+          <div class="stage-event-title">Against the Grain: Port in Modern Mixology</div>
+          <div class="stage-event-speakers">José Mendes</div>
+          <div class="stage-event-presenter">presented by Cockburn's Port</div>
+        </div>
+        <div class="stage-event">
+          <div class="stage-event-time">16:00</div>
+          <div class="stage-event-title">Fermentation In-Depth: Eine Perspektive</div>
+          <div class="stage-event-speakers">Felix Heyer</div>
+          <div class="stage-event-presenter">presented by Bar Symposium Cologne</div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /view-stage -->
+
+</main>
+
+<footer>
+  Bar Symposium Cologne · Dienstag, 12.05.2026
+</footer>
+
+<script>
+  function setView(v) {
+    document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.toggle-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('view-' + v).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
